@@ -18,4 +18,4 @@ Input Parameter
 
 Cite
 ---
-If used，Please cite：[JingjingZhang + An effective method for identifying viral mutations based on anchors]
+If used，Please cite：[Runbin Tang + An effective method for identifying viral mutations based on anchors]
