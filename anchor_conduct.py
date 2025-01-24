@@ -70,6 +70,8 @@ def parameters():
                         help='the space of kmer')
     parser.add_argument('--savefolder', default='./distance', type=str,
                         help='position of save distance file')
+    parser.add_argument('--medatacsv', type=str, default='data_csv/hiv.csv',
+                        help='the sequence information')
 
     opt = parser.parse_args()
 
