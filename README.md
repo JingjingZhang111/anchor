@@ -14,6 +14,8 @@ Input Parameter
 
 --seqs  the seqs file (all sequence in one fasta file)
 
+--savename the output filename
+
 Output
 ---
 --Distance matrix in meg format
