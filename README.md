@@ -10,6 +10,10 @@ Input Parameter
 ---
 --k the kmer length
 
---epsilon type=int, help='the space of kmer'
+--epsilon the space of kmer
 
---seqs  help='the seqs file (all sequence in one fasta file)
+--seqs  the seqs file (all sequence in one fasta file)
+
+Output
+---
+--Distance matrix in meg format
