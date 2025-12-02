@@ -56,52 +56,67 @@ def readfolder(data):
         s[seq.id]= str(seq.seq)
     return s
 
-if __name__=='__main__':
+def opt_parameter():
+    parser = argparse.ArgumentParser()
 
-    # #the savepath of data, can be a file or folder
-    datapath='data.fasta';
-    k=4;##Parameter Settings
-    epsilon=13
-    
-    
-    if os.path.isfile(datapath):
-        seqs={i.id:str(i.seq) for i in SeqIO.parse(datapath,'fasta')}
-        
-    elif os.path.isdir(datapath):
-        seqs=readfolder(datapath)
-        
+    parser.add_argument('--seqs', default='example.fasta',
+                        type=str, help='the savepath of data, can be a file or folder')
+
+    parser.add_argument('--k', default=4,
+                        type=int, help='size of kmer')
+
+    parser.add_argument('--epsilon', default=13,
+                        type=int, help='The elastic area for reverse searchuence stype')
+
+    parser.add_argument('--savename', default='results.meg',
+                        type=str, help='output filename')
+
+    opt = parser.parse_args()
+
+    return opt
+
+
+if __name__ == '__main__':
+    opt = opt_parameter()
+
+    if os.path.isfile(opt.seqs):
+        seqs = {i.id: str(i.seq) for i in SeqIO.parse(opt.seqs, 'fasta')}
+
+    elif os.path.isdir(opt.seqs):
+        seqs = readfolder(opt.seqs)
+
     else:
         exit('Check the path of inputting data')
-    
-    print('  '+'=='*len("~"*2+'mic-alignment'+"=="*1))
-    print('   '+"--"*2+'  start scanner anchor  '+"--"*2)
-    
-    d={seqname: scan_anchor(seq, k, epsilon) for seqname,seq in seqs.items()}
-    
-    allanchor=[]
-    for i in d.values():
-        allanchor+=list(i.keys())
-    anchorcode={j:i for i,j in enumerate(set(allanchor))}
-    seq_vector={}
 
-    for i,j in d.items():
-        seq_vector[i]=[0]*len(anchorcode)
-        for ij,ijk in j.items():
-            seq_vector[i][anchorcode[ij]]=ijk
-    seqname_code={j:i for i,j in enumerate(d.keys())}
-    ns=np.zeros((len(seqs),len(anchorcode)))        
-    spacevec=[0]*len(anchorcode)   
-    for i,j in d.items():
-        for ij,ijk in j.items():
-            ns[seqname_code[i]][anchorcode[ij]]=ijk
-            
-    seqnames=[0]*len(seqname_code)
-    for i,j in seqname_code.items():
-        seqnames[j]=i
-    
-    
+    print('  ' + '==' * len("~" * 2 + 'mic-alignment' + "==" * 1))
+    print('   ' + "--" * 2 + '  start scanner anchor  ' + "--" * 2)
+
+    d = {seqname: scan_anchor(seq, opt.k, opt.epsilon) for seqname, seq in seqs.items()}
+
+    allanchor = []
+    for i in d.values():
+        allanchor += list(i.keys())
+    anchorcode = {j: i for i, j in enumerate(set(allanchor))}
+    seq_vector = {}
+
+    for i, j in d.items():
+        seq_vector[i] = [0] * len(anchorcode)
+        for ij, ijk in j.items():
+            seq_vector[i][anchorcode[ij]] = ijk
+    seqname_code = {j: i for i, j in enumerate(d.keys())}
+    ns = np.zeros((len(seqs), len(anchorcode)))
+    spacevec = [0] * len(anchorcode)
+    for i, j in d.items():
+        for ij, ijk in j.items():
+            ns[seqname_code[i]][anchorcode[ij]] = ijk
+
+    seqnames = [0] * len(seqname_code)
+    for i, j in seqname_code.items():
+        seqnames[j] = i
+
     from scipy.spatial.distance import squareform, pdist
-    distA=pdist(ns,metric='cosine')
-    distB = squareform(distA) 
-     
-    write_megaa('results.meg',seqnames,distB)
+
+    distA = pdist(ns, metric='cosine')
+    distB = squareform(distA)
+
+    write_megaa(opt.savename, seqnames, distB)
